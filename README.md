@@ -1,99 +1,202 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Vaccination Points API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Esta API permite o gerenciamento de pontos de vacinação, incluindo operações para criação, leitura, atualização e exclusão (CRUD) de pontos de vacinação em várias cidades. Além disso, a API suporta a inserção de dados de exemplo para facilitar os testes.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tecnologias
 
-## Description
+- **NestJS**: Framework para construção da API.
+- **MongoDB**: Banco de dados NoSQL para armazenar dados de vacinação e cidades.
+- **Mongoose**: Biblioteca para modelagem de dados MongoDB em Node.js.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Endpoints da API
 
-## Project setup
+A API possui os seguintes endpoints:
 
-```bash
-$ npm install
-```
+### 1. **Cadastrar Cidades**
+Este endpoint permite a criação de novas cidades que poderão ser associadas a pontos de vacinação.
 
-## Compile and run the project
+- **Método**: `POST`
+- **Rota**: `/cities`
+- **Corpo da Requisição**:
+    +++json
+    {
+      "name": "Maceió",
+      "state": "Alagoas"
+    }
+    +++
+- **Resposta**:
+    +++json
+    {
+      "_id": "ID_DA_CIDADE",
+      "name": "Maceió",
+      "state": "Alagoas",
+      "__v": 0
+    }
+    +++
 
-```bash
-# development
-$ npm run start
+### 2. **Listar todas as Cidades**
+Este endpoint retorna todas as cidades cadastradas.
 
-# watch mode
-$ npm run start:dev
+- **Método**: `GET`
+- **Rota**: `/cities`
+- **Resposta**:
+    +++json
+    [
+      {
+        "_id": "ID_DA_CIDADE",
+        "name": "Maceió",
+        "state": "Alagoas",
+        "__v": 0
+      },
+      {
+        "_id": "ID_OUTRA_CIDADE",
+        "name": "Arapiraca",
+        "state": "Alagoas",
+        "__v": 0
+      }
+    ]
+    +++
 
-# production mode
-$ npm run start:prod
-```
+### 3. **Cadastrar Pontos de Vacinação**
+Este endpoint permite criar novos pontos de vacinação, associando-os a uma cidade.
 
-## Run tests
+- **Método**: `POST`
+- **Rota**: `/vaccination-points`
+- **Corpo da Requisição**:
+    +++json
+    {
+      "name": "Ponto de Vacinação Maceió",
+      "address": "Rua das Flores, Maceió, AL",
+      "cityId": "ID_DA_CIDADE_MACEIO",
+      "hours": "8:00 - 17:00"
+    }
+    +++
+- **Resposta**:
+    +++json
+    {
+      "_id": "ID_DO_PONTO_VACINACAO",
+      "name": "Ponto de Vacinação Maceió",
+      "address": "Rua das Flores, Maceió, AL",
+      "cityId": "ID_DA_CIDADE_MACEIO",
+      "hours": "8:00 - 17:00",
+      "__v": 0
+    }
+    +++
 
-```bash
-# unit tests
-$ npm run test
+### 4. **Listar Pontos de Vacinação por Cidade**
+Este endpoint retorna todos os pontos de vacinação cadastrados para uma cidade específica.
 
-# e2e tests
-$ npm run test:e2e
+- **Método**: `GET`
+- **Rota**: `/vaccination-points/:cityId`
+- **Parâmetros**: `cityId` - ID da cidade
+- **Exemplo de URL**:
+    +++bash
+    /vaccination-points/ID_DA_CIDADE_MACEIO
+    +++
+- **Resposta**:
+    +++json
+    [
+      {
+        "_id": "ID_DO_PONTO_VACINACAO",
+        "name": "Ponto de Vacinação Maceió",
+        "address": "Rua das Flores, Maceió, AL",
+        "cityId": "ID_DA_CIDADE_MACEIO",
+        "hours": "8:00 - 17:00",
+        "__v": 0
+      }
+    ]
+    +++
 
-# test coverage
-$ npm run test:cov
-```
+### 5. **Atualizar um Ponto de Vacinação**
+Este endpoint permite atualizar um ponto de vacinação existente.
 
-## Deployment
+- **Método**: `PUT`
+- **Rota**: `/vaccination-points/:id`
+- **Parâmetros**: `id` - ID do ponto de vacinação
+- **Corpo da Requisição**:
+    +++json
+    {
+      "name": "Novo Ponto de Vacinação Maceió",
+      "address": "Avenida X, Maceió, AL",
+      "cityId": "ID_DA_CIDADE_MACEIO",
+      "hours": "9:00 - 18:00"
+    }
+    +++
+- **Resposta**:
+    +++json
+    {
+      "_id": "ID_DO_PONTO_VACINACAO",
+      "name": "Novo Ponto de Vacinação Maceió",
+      "address": "Avenida X, Maceió, AL",
+      "cityId": "ID_DA_CIDADE_MACEIO",
+      "hours": "9:00 - 18:00",
+      "__v": 0
+    }
+    +++
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### 6. **Remover um Ponto de Vacinação**
+Este endpoint permite remover um ponto de vacinação.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+- **Método**: `DELETE`
+- **Rota**: `/vaccination-points/:id`
+- **Parâmetros**: `id` - ID do ponto de vacinação
+- **Resposta**:
+    +++json
+    {
+      "_id": "ID_DO_PONTO_VACINACAO",
+      "name": "Ponto de Vacinação Maceió",
+      "address": "Rua das Flores, Maceió, AL",
+      "cityId": "ID_DA_CIDADE_MACEIO",
+      "hours": "8:00 - 17:00",
+      "__v": 0
+    }
+    +++
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+### 7. **Inserir Dados de Exemplo**
+Este endpoint insere dados de exemplo para facilitar o teste da API.
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+- **Método**: `GET`
+- **Rota**: `/vaccination-points/seed`
+- **Resposta**:
+    +++json
+    {
+      "message": "Dados de pontos de vacinação inseridos com sucesso!"
+    }
+    +++
 
-## Resources
+## Como Rodar a API
 
-Check out a few resources that may come in handy when working with NestJS:
+### Pré-requisitos
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- **Node.js** (versão 16 ou superior)
+- **MongoDB** (local ou MongoDB Atlas)
 
-## Support
+### Instalação
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+1. Clone o repositório para sua máquina:
+    +++bash
+    git clone https://github.com/joaosmendess/vaccination-api.git
+    cd vaccination-api
+    +++
 
-## Stay in touch
+2. Instale as dependências:
+    +++bash
+    npm install
+    +++
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+3. Configure o MongoDB (se necessário):
+    - Se estiver usando o MongoDB localmente, certifique-se de que o MongoDB está rodando.
+    - Se estiver usando o MongoDB Atlas, adicione a URL de conexão no arquivo `.env`.
 
-## License
+4. Inicie a aplicação:
+    +++bash
+    npm run start
+    +++
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+A API estará disponível em `http://localhost:3000`.
+
+## Testes com o Postman
+
+Para testar a API, você pode importar o arquivo de coleção do Postman (se fornecido) ou criar as requisições manualmente com base nas informações fornecidas acima.
+
+
